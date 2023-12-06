@@ -1,4 +1,4 @@
-# json-flattening
+# json-unflattening
 
 ![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)
 [![](https://img.shields.io/crates/v/json-unflattening?style=flat-square)](https://crates.io/crates/json-unflattening)
@@ -17,7 +17,7 @@ Add this library to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-json-unflattening = "0.1.1"
+json-unflattening = "0.1.2"
 ```
 
 
@@ -53,45 +53,58 @@ fn main() {
 
 ```json
 {
-  "x": [
-    ["y", "z"],
-    { "p": "q" },
-    ["r", "s"],
-    [
-      { "u": "v" },
-      { "w": "x" }
-    ],
-    ["y", "z"]
-  ]
+  "name": {
+      "first": "John",
+      "last": "Doe"
+  },
+  "age": 30,
+  "city": "New York",
+  "hobbies": ["Reading", "Hiking", "Gaming"]
 }
-
 ```
 
 ### Flattened JSON
 
 ```json
 {
-  "x[0][0]": "y",
-  "x[0][1]": "z",
-  "x[1].p": "q",
-  "x[2][0]": "r",
-  "x[2][1]": "s",
-  "x[3][0].u": "v",
-  "x[3][1].w": "x",
-  "x[4][0]": "y",
-  "x[4][1]": "z"
+  "name.first": "John",
+  "name.last": "Doe",
+  "age": 30,
+  "city": "New York",
+  "hobbies[0]": "Reading",
+  "hobbies[1]": "Hiking",
+  "hobbies[2]": "Gaming"
 }
-
 ```
 
-#### Explanation:
+#### Flattening process:
 
-1. `"x[0][0]": "y"` and `"x[0][1]": "z"`: The first element of array `x` is itself an array, so we represent its elements with indices.
+1. **Flatten Object Properties:**
+   - Flatten the `"name"` object properties using dot notation: `"name.first"` and `"name.last"`.
+   - Flatten the scalar properties `"age"` and `"city"` directly without modification.
 
-2. `"x[1].p": "q"`: The second element of array `x` is an object with a key-value pair, so we represent it with dot notation.
+   Result:
+   ```json
+   {
+     "name.first": "John",
+     "name.last": "Doe",
+     "age": 30,
+     "city": "New York"
+   }
+   ```
 
-3. `"x[2][0]": "r"` and `"x[2][1]": "s"`: The third element of array `x` is again an array, so we use indices.
+2. **Flatten Array Elements:**
+   - Flatten the array `"hobbies"` by appending indices to each element: `"hobbies[0]"`, `"hobbies[1]"`, and `"hobbies[2]"`.
 
-4. `"x[3][0].u": "v"` and `"x[3][1].w": "x"`: The fourth element of array `x` is an array of objects. We use indices for the outer array and dot notation for the objects.
-
-5. `"x[4][0]": "y"` and `"x[4][1]": "z"`: The fifth element of array `x` is similar to the first, so we again use indices.
+   Result:
+   ```json
+   {
+     "name.first": "John",
+     "name.last": "Doe",
+     "age": 30,
+     "city": "New York",
+     "hobbies[0]": "Reading",
+     "hobbies[1]": "Hiking",
+     "hobbies[2]": "Gaming"
+   }
+   ```
