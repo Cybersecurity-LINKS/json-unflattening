@@ -1,8 +1,8 @@
 # json-flattening
 
 ![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)
-[![](https://img.shields.io/crates/v/json-flattening?style=flat-square)](https://crates.io/crates/json-flattening)
-[![](https://img.shields.io/docsrs/json-flattening?style=flat-square)](https://docs.rs/json-flattening/)
+[![](https://img.shields.io/crates/v/json-unflattening?style=flat-square)](https://crates.io/crates/json-unflattening)
+[![](https://img.shields.io/docsrs/json-unflattening?style=flat-square)](https://docs.rs/json-unflattening/)
 
 A Rust library for flattening and unflattening JSON structures. Uses `serde_json` for JSON serialization and deserialization.
 
@@ -17,14 +17,14 @@ Add this library to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-json-flattening = "0.1.0"
+json-unflattening = "0.1.1"
 ```
 
 
 ## Usage
 
 ```rust
-use json_flattening::{flatten, unflatten};
+use json_unflattening::{flatten, unflatten};
 
 fn main() {
     let input_json = json!({
@@ -33,7 +33,8 @@ fn main() {
             "last": "Doe"
         },
         "age": 30,
-        "city": "New York"
+        "city": "New York",
+        "hobbies": ["Reading", "Hiking", "Gaming"]
     });
 
     let flattened_json = flatten(&input_json).unwrap();
