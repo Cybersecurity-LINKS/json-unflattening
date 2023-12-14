@@ -6,7 +6,7 @@ license = "Apache-2.0"
 authors = ["LINKS Foundation"]
 description = "A Rust library for flattening and unflattening JSON structures."
 repository = "https://github.com/Cybersecurity-LINKS/json-unflattening"
-keywords = ["json", "flatten", "unflatten", "flattening", "unflattening", "object", "serde"]
+keywords = ["json", "flatten-json", "flattening", "unflattening", "serde"]
 categories = ["encoding"]
 
 [dependencies]
