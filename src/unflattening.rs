@@ -30,6 +30,10 @@ use crate::errors;
 ///
 pub fn unflatten(data: &Map<String, Value>) -> Result<Value, errors::Error> {
     let mut output = json!({});
+    
+    if data.is_empty() {
+        return Ok(output);
+    }
 
     for (p, value) in data {
         let mut cur = &mut output;

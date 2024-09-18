@@ -17,7 +17,7 @@ Add this library to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-json-unflattening = "0.1.3"
+json-unflattening = "0.1.4"
 ```
 
 
