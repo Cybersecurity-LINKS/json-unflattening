@@ -42,9 +42,9 @@ pub fn unflatten(data: &Map<String, Value>) -> Result<Value, errors::Error> {
         let regex = regex::Regex::new(r"\.?([^.\[\]]+)|\[(\d+)\]").unwrap();
 
         for c in regex.captures_iter(&p){
-
+            
             let c2 = c.get(2).and_then(|m|  Some(m.as_str()));
-
+            
             let value = if c2.is_some() {
                 Value::Array(vec![])
             } else {
@@ -62,7 +62,10 @@ pub fn unflatten(data: &Map<String, Value>) -> Result<Value, errors::Error> {
                 Value::Object(o) => {
                     if o.get(property).is_none() {
                         o.insert(property.to_owned(), value);
+                    } else if c2.is_some() && o.get(property).is_some_and(|f| f.is_object()) {
+                        return Err(errors::Error::FormatError)
                     }
+                    
                     cur = cur.get_mut(property).ok_or(errors::Error::Unspecified)?;
                     
                 },
@@ -84,6 +87,9 @@ pub fn unflatten(data: &Map<String, Value>) -> Result<Value, errors::Error> {
                 a.push(value.clone());
             },
             Value::Object(o) => {
+                if o.contains_key(property) {
+                    return Err(errors::Error::FormatError);
+                }
                 o.insert(property.to_owned(), value.clone());
             },
             _ => return Err(errors::Error::InvalidType)
@@ -94,15 +100,11 @@ pub fn unflatten(data: &Map<String, Value>) -> Result<Value, errors::Error> {
     return output.get("").ok_or(errors::Error::InvalidProperty).cloned()
 }
     
-
-
-
 #[cfg(test)]
 mod tests {
     use serde_json::json;
     use crate::flattening::flatten;
     use super::*;
-
 
     #[test]
     fn unflattening_nested_arrays_and_objects_1() {
@@ -212,6 +214,40 @@ mod tests {
 
         assert_eq!(unflat, json);
 
+    }
+
+    #[test]
+    fn unflattening_with_conflicts_1() {
+       
+        let json: Value = json!({
+            "foo.bar": 1,
+            "foo": 2
+        });
+
+        if let Value::Object(map) = json {
+            let unflat_err = unflatten(&map);
+            assert_eq!(unflat_err.err().unwrap().to_string(), errors::Error::FormatError.to_string());
+        } else {
+            panic!("Expected an Object");
+        }
+         
+    }
+
+    #[test]
+    fn unflattening_with_conflicts_2() {
+        
+        let json: Value = json!({
+            "foo.bar": 1,
+            "foo[0]" : 2
+        });
+
+        if let Value::Object(map) = json {
+            let unflat_err = unflatten(&map);
+            assert_eq!(unflat_err.err().unwrap().to_string(), errors::Error::FormatError.to_string());
+        } else {
+            panic!("Expected an Object");
+        }
+         
     }
 
 }
